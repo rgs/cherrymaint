@@ -1,5 +1,41 @@
-<h2>It Works!</h2>
-
-<p>
-I'm in <code>/home/rafael/cherrymaint/views/index.tt</code>
-</p>
+<script type="text/javascript">
+function markCommit(commit,value) {
+    $.ajax({
+        url: '/mark?commit=' + commit + '&value=' + value,
+        type: 'GET',
+        dataType: 'html',
+        cache: false,
+        async: false,
+        success: function(res) {
+            $('#tr' + commit).removeClass("status0");
+            $('#tr' + commit).removeClass("status1");
+            $('#tr' + commit).removeClass("status2");
+            $('#tr' + commit).removeClass("status3");
+            $('#tr' + commit).removeClass("status4");
+            $('#tr' + commit).removeClass("status5");
+            $('#tr' + commit).addClass('status' + value);
+        },
+        error: function(req, st, error) {
+            alert("Couldn't update the DB");
+        }
+    });
+}
+</script>
+<table>
+<% FOREACH commit IN commits %>
+<tr id="tr<% commit.sha1 %>" class="status<% commit.status %>">
+<td><a href="http://perl5.git.perl.org/perl.git/commitdiff/<% commit.sha1 %>"><% commit.sha1 %></a></td>
+<td><% commit.msg %></td>
+<td>
+<select name="status<% commit.sha1 %>" onChange="markCommit('<% commit.sha1 %>',this.value)">
+<option value="0" <% commit.status == 0 ? "selected" : "" %>>Unexamined</option>
+<option value="1" <% commit.status == 1 ? "selected" : "" %>>Rejected</option>
+<option value="2" <% commit.status == 2 ? "selected" : "" %>>Requested</option>
+<option value="3" <% commit.status == 3 ? "selected" : "" %>>Seconded</option>
+<option value="4" <% commit.status == 4 ? "selected" : "" %>>Approved</option>
+<option value="5" <% commit.status == 5 ? "selected" : "" %>>Cherry-picked</option>
+</select>
+</td>
+</tr>
+<% END %>
+<table>
