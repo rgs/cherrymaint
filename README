@@ -1,0 +1,33 @@
+cherrymaint
+-----------
+
+cherrymaint is a minimalistic, standalone webapp that allows to track the
+commits in a master branch that you want to consider for cherry-picking in
+a maintainance branch. It has been written to help the Perl 5 committers
+to manage the maintainance releases of Perl 5.
+
+what it does
+------------
+
+Each commit between two chosen points in the master branch can be
+associated to a status: Unexamined, Rejected, Requested, Seconded,
+Approved, and Cherry-picked. The statuses are currently saved in a flat
+file, which is not very scalable.
+
+what it doesn't do
+------------------
+
+No access control or authentification.
+
+what it requires to work
+------------------------
+
+Perl 5, Dancer and Template Toolkit.
+
+how do I install it
+-------------------
+
+Edit config.yml to indicate the gitroot directory, and the startpoint
+(usually some tag) and endpoint (usually some HEAD) of the commits to
+display. Then, run cherrymaint.pl and it'll start an http server on port
+3000 (Dancer's default.)
