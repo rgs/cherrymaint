@@ -34,7 +34,7 @@ function markCommit(commit,value) {
 <option value="5" <% commit.status == 5 ? "selected" : "" %>>Cherry-picked</option>
 </select>
 </td>
-<td><a href="http://perl5.git.perl.org/perl.git/commitdiff/<% commit.sha1 %>"><% commit.sha1 %></a></td>
+<td><a href="http://perl5.git.perl.org/perl.git/commitdiff/<% commit.sha1 %>" target="perldiff"><% commit.sha1 %></a></td>
 <td><% commit.msg %></td>
 </tr>
 <% END %>
