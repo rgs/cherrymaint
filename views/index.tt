@@ -24,8 +24,6 @@ function markCommit(commit,value) {
 <table>
 <% FOREACH commit IN commits %>
 <tr id="tr<% commit.sha1 %>" class="status<% commit.status %>">
-<td><a href="http://perl5.git.perl.org/perl.git/commitdiff/<% commit.sha1 %>"><% commit.sha1 %></a></td>
-<td><% commit.msg %></td>
 <td>
 <select name="status<% commit.sha1 %>" onChange="markCommit('<% commit.sha1 %>',this.value)">
 <option value="0" <% commit.status == 0 ? "selected" : "" %>>Unexamined</option>
@@ -36,6 +34,8 @@ function markCommit(commit,value) {
 <option value="5" <% commit.status == 5 ? "selected" : "" %>>Cherry-picked</option>
 </select>
 </td>
+<td><a href="http://perl5.git.perl.org/perl.git/commitdiff/<% commit.sha1 %>"><% commit.sha1 %></a></td>
+<td><% commit.msg %></td>
 </tr>
 <% END %>
 <table>
