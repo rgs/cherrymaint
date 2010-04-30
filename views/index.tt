@@ -21,6 +21,7 @@ function markCommit(commit,value) {
     });
 }
 </script>
+<p>Welcome, <% user %>.</p>
 <table>
 <% FOREACH commit IN commits %>
 <tr id="tr<% commit.sha1 %>" class="status<% commit.status %>">
@@ -36,6 +37,11 @@ function markCommit(commit,value) {
 </td>
 <td><a href="http://perl5.git.perl.org/perl.git/commitdiff/<% commit.sha1 %>" target="perldiff"><% commit.sha1 %></a></td>
 <td><% commit.msg %></td>
+<td>
+<% FOREACH user IN commit.votes %>
+<% user %>
+<% END %>
+</td>
 </tr>
 <% END %>
-<table>
+</table>
