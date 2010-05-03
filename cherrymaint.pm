@@ -59,7 +59,7 @@ sub get_user {
 
 get '/' => sub {
     my $user = get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
-    my @log  = qx($GIT log --no-color --oneline $STARTPOINT..$ENDPOINT);
+    my @log  = qx($GIT log --no-color --oneline --no-merges $STARTPOINT..$ENDPOINT);
     my $data = load_datafile;
     my @commits;
     for my $log (@log) {
