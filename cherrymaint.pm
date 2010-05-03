@@ -83,6 +83,7 @@ get '/' => sub {
 };
 
 get '/mark' => sub {
+    my @votes;
     my $commit = params->{commit};
     my $value = params->{value};
     $commit =~ /^[0-9a-f]+$/ or die;
@@ -98,8 +99,10 @@ get '/mark' => sub {
             $value,
             [ $user ],
         ];
+        @votes = ($user);
     } elsif ($value == 5) { # Cherry-picked
         $data->{$commit}->[0] = $value;
+        @votes = @{ $data->{$commit}->[1] || [] };
     } else { # Vote
         my $old_value = $data->{$commit}->[0];
         if (not defined $old_value or $old_value < 2) {
@@ -107,12 +110,14 @@ get '/mark' => sub {
                 2,
                 [ $user ],
             ];
+            @votes = ($user);
         } elsif ($old_value < 5) {
-            my @votes = @{ $data->{$commit}->[1] || [] };
+            @votes = @{ $data->{$commit}->[1] || [] };
             if ($old_value < $value) {
                 unless (eval { $user eq $_ and return 1 for @votes; 0 }) {
                     $data->{$commit}->[0] = $old_value + 1;
                     push @{ $data->{$commit}->[1] }, $user;
+                    push @votes, $user;
                 }
             } elsif ($old_value > $value) {
                 my $idx = eval {
@@ -123,11 +128,13 @@ get '/mark' => sub {
                 if (defined $idx) {
                     $data->{$commit}->[0] = $old_value - 1;
                     splice @{ $data->{$commit}->[1] }, $idx, 1;
+                    @votes = @{ $data->{$commit}->[1] || [] };
                 }
             }
         }
     }
     save_datafile($data);
+    return "@votes";
 };
 
 true;

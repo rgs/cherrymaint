@@ -14,6 +14,7 @@ function markCommit(commit,value) {
             $('#tr' + commit).removeClass("status4");
             $('#tr' + commit).removeClass("status5");
             $('#tr' + commit).addClass('status' + value);
+            $('#votes' + commit).html(res);
         },
         error: function(req, st, error) {
             alert("Couldn't update the DB");
@@ -37,7 +38,7 @@ function markCommit(commit,value) {
 </td>
 <td><a href="http://perl5.git.perl.org/perl.git/commitdiff/<% commit.sha1 %>" target="perldiff"><% commit.sha1 %></a></td>
 <td><% commit.msg %></td>
-<td>
+<td id="votes<% commit.sha1 %>">
 <% FOREACH user IN commit.votes %>
 <% user %>
 <% END %>
