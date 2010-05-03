@@ -7,7 +7,7 @@ use List::Util qw/min max/;
 my $BLEADGITHOME = config->{gitroot};
 my $STARTPOINT = config->{startpoint};
 my $ENDPOINT = config->{endpoint};
-my $GIT = "/usr/bin/git";
+my $GIT = "/usr/local/bin/git";
 my $DATAFILE = "$ENV{HOME}/cherrymaint.db";
 
 chdir $BLEADGITHOME or die "Can't chdir to $BLEADGITHOME: $!\n";

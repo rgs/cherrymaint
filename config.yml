@@ -1,6 +1,6 @@
 layout: "main"
 logger: "file"
 template: template_toolkit
-gitroot: "/home/rafael/bleadperl"
+gitroot: "/gitroot/perl.git"
 startpoint: "v5.12.0"
 endpoint: blead
