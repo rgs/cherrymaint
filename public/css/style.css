@@ -4,6 +4,8 @@ body {
     background-color: white;
 }
 
+H1 { border-bottom: thin solid black }
+
 #footer {
     border-top: 1px solid #aba29c;
     margin-top: 2em;
@@ -18,3 +20,5 @@ tr.status2 { background-color: #5F5; color: black }
 tr.status3 { background-color: #FF5; color: black }
 tr.status4 { background-color: #F55; color: black }
 tr.status5 { background-color: #55F; color: black }
+
+td.vote { font-size: small }
