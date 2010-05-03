@@ -15,6 +15,6 @@ body {
 tr.status0 { background-color: white; color: black }
 tr.status1 { background-color: #EEE; color: #999 }
 tr.status2 { background-color: #5F5; color: black }
-tr.status3 { background-color: #5F5; color: black }
+tr.status3 { background-color: #FF5; color: black }
 tr.status4 { background-color: #F55; color: black }
 tr.status5 { background-color: #55F; color: black }
