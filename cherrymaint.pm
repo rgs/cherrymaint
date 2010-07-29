@@ -89,30 +89,32 @@ get '/mark' => sub {
     $value =~ /^[0-5]$/ or die;
     my $user = get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
     my $data = load_datafile;
+    my $state = $data->{$commit};
     if ($value == 0) { # Unexamined
-        $data->{$commit} = [
+        $state = [
             $value,
+            [ ],
         ];
     } elsif ($value == 1) { # Rejected
-        $data->{$commit} = [
+        $state = [
             $value,
             [ $user ],
         ];
     } elsif ($value == 5) { # Cherry-picked
-        $data->{$commit}->[0] = $value;
+        $state->[0] = $value;
     } else { # Vote
-        my $old_value = $data->{$commit}->[0];
+        my $old_value = $state->[0];
         if (not defined $old_value or $old_value < 2) {
-            $data->{$commit} = [
+            $state = [
                 2,
                 [ $user ],
             ];
         } elsif ($old_value < 5) {
-            my @votes = @{ $data->{$commit}->[1] || [] };
+            my @votes = @{ $state->[1] || [] };
             if ($old_value < $value) {
                 unless (eval { $user eq $_ and return 1 for @votes; 0 }) {
-                    $data->{$commit}->[0] = $old_value + 1;
-                    push @{ $data->{$commit}->[1] }, $user;
+                    $state->[0] = $old_value + 1;
+                    push @{ $state->[1] }, $user;
                 }
             } elsif ($old_value > $value) {
                 my $idx = eval {
@@ -121,14 +123,15 @@ get '/mark' => sub {
                     undef
                 };
                 if (defined $idx) {
-                    $data->{$commit}->[0] = $old_value - 1;
-                    splice @{ $data->{$commit}->[1] }, $idx, 1;
+                    $state->[0] = $old_value - 1;
+                    splice @{ $state->[1] }, $idx, 1;
                 }
             }
         }
     }
+    $data->{$commit} = $state;
     save_datafile($data);
-    return join ' ', @{ $data->{$commit}->[1] || [] };
+    return join ' ', @{ $state->[1] || [] };
 };
 
 true;
