@@ -38,8 +38,42 @@ function markCommit(commit,value) {
         }
     });
 }
+function reloadLimit(old_page, old_limit, new_limit) {
+    var start = old_page * old_limit;
+    var new_page = 0;
+    if (new_limit != 0) {
+        new_page = Math.floor(start / new_limit);
+    }
+    window.location = '/?page=' + new_page + '&limit=' + new_limit;
+}
 </script>
 <p>Welcome, <% user %>.</p>
+<p class="pages">
+<% FILTER collapse %>
+ <% IF cur_page > 0 %>
+<a href="/?page=<% cur_page - 1 %>&limit=<% limit %>">Newer</a>
+ <% ELSE %>
+Newer
+ <% END %>
+-
+ <% FOREACH page IN pages %>
+  <% IF page.1 %>
+<% page.0 %>
+  <% ELSE %>
+<a href="/?page=<% page.0 %>&limit=<% limit %>"><% page.0 %></a>
+  <% END %>
+ <% END %>
+-
+ <% IF cur_page < last_page %>
+<a href="/?page=<% cur_page + 1 %>&limit=<% limit %>">Older</a>
+ <% ELSE %>
+Older
+ <% END %>
+<% END %>
+-
+<label for="limit">Limit : </label>
+<input type="text" id="limit" size="2" value="<% limit %>" onChange="reloadLimit(<% cur_page %>, <% limit %>, this.value)">
+</p>
 <table>
 <% FOREACH commit IN commits %>
 <tr id="tr<% commit.sha1 %>" class="status<% commit.status %>">

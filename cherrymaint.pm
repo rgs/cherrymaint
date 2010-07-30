@@ -112,14 +112,48 @@ sub get_log {
 }
 
 get '/' => sub {
+    my $page = params->{page};
+    $page = 0 unless defined $page;
+    $page =~ /^[0-9]+$/ or die 'Invalid page number';
+
+    my $limit = params->{limit};
+    $limit = 0 unless defined $limit;
+    $limit =~ /^[0-9]+$/ or die 'Invalid limit';
+
     my $user = get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
     my @log  = get_log;
     my $data = do {
         my $lock = lock_datafile("$$-$user");
         load_datafile;
     };
+
+    my (@pages, $current_page);
+    if ($limit) {
+        my $max_pages = @log / $limit;
+        my $num = 0;
+        for (my $start = 0; $start <= $#log; $start += $limit) {
+            my $end = $start + $limit - 1;
+            $end    = $#log if $end > $#log;
+            if ($num == $page) {
+                $current_page = [ $start => $end ];
+            }
+            push @pages, [ $num, $num == $page ? 1 : 0 ];
+            ++$num;
+        }
+        unless ($current_page) { # Page was out of bounds
+            $page = 0;
+            $current_page = [ 0 => -1 ];
+        }
+    } else {
+        $page  = 0;
+        @pages = $current_page = [ 0 => $#log ];
+    }
+
+    my ($start, $end) = @$current_page;
     my @commits;
-    for my $log (@log) {
+    for my $i ($start .. $end) {
+        next if $i > $#log;
+        my $log    = $log[$i];
         my $commit = $log->[0];
         my $status = $data->{$commit}->[0] || 0;
         my $votes  = $data->{$commit}->[1];
@@ -131,8 +165,12 @@ get '/' => sub {
         };
     }
     template 'index', {
-        commits => \@commits,
-        user    => $user,
+        commits   => \@commits,
+        user      => $user,
+        limit     => $limit,
+        cur_page  => $page,
+        last_page => $#pages,
+        pages     => \@pages,
     };
 };
 
