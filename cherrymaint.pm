@@ -12,6 +12,12 @@ my $DATAFILE = "$ENV{HOME}/cherrymaint.db";
 
 chdir $BLEADGITHOME or die "Can't chdir to $BLEADGITHOME: $!\n";
 
+sub any_eq {
+    my $str = shift;
+    $str eq $_ and return 1 for @_;
+    0;
+}
+
 sub load_datafile {
     my $data = {};
     open my $fh, '<', $DATAFILE or die $!;
@@ -112,17 +118,17 @@ get '/mark' => sub {
         } elsif ($old_value < 5) {
             my @votes = @{ $state->[1] || [] };
             if ($old_value < $value) {
-                unless (eval { $user eq $_ and return 1 for @votes; 0 }) {
+                unless (any_eq $user => @votes) {
                     $state->[0] = $old_value + 1;
                     push @{ $state->[1] }, $user;
                 }
             } elsif ($old_value > $value) {
-                my $idx = eval {
-                    my $i = 0;
-                    $user eq $_ and return $i++ for @votes;
-                    undef
-                };
-                if (defined $idx) {
+                my $idx = 0;
+                for (@votes) {
+                    last if $user eq $_;
+                    $idx++;
+                }
+                if ($idx < @votes) {
                     $state->[0] = $old_value - 1;
                     splice @{ $state->[1] }, $idx, 1;
                 }
