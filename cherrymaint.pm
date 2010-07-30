@@ -5,12 +5,14 @@ use Socket qw/inet_aton/;
 use List::Util qw/min max/;
 use Fcntl qw/LOCK_EX LOCK_UN/;
 
+my $GIT          = config->{git};
 my $BLEADGITHOME = config->{gitroot};
-my $STARTPOINT = config->{startpoint};
-my $ENDPOINT = config->{endpoint};
-my $GIT = "/usr/local/bin/git";
-my $DATAFILE = "$ENV{HOME}/cherrymaint.db";
-my $LOCK     = "$ENV{HOME}/cherrymaint.lock";
+my $DATAFILE     = config->{datafile};
+my $LOCK         = config->{lock};
+my $STARTPOINT   = config->{startpoint};
+my $ENDPOINT     = config->{endpoint};
+
+$_ = (glob)[0] for $GIT, $BLEADGITHOME, $DATAFILE, $LOCK;
 
 chdir $BLEADGITHOME or die "Can't chdir to $BLEADGITHOME: $!\n";
 

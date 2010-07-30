@@ -1,6 +1,9 @@
-layout: "main"
-logger: "file"
-template: template_toolkit
-gitroot: "/gitroot/perl.git"
+layout:     "main"
+logger:     "file"
+template:   template_toolkit
+git:        "/usr/local/bin/git"
+gitroot:    "/gitroot/perl.git"
+datafile:   "~/cherrymaint.db"
+lock:       "~/cherrymaint.lock"
 startpoint: "v5.12.0"
-endpoint: blead
+endpoint:   blead
