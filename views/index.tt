@@ -13,6 +13,7 @@ function markCommit(commit,value) {
             $('#tr' + commit).removeClass("status3");
             $('#tr' + commit).removeClass("status4");
             $('#tr' + commit).removeClass("status5");
+            $('#tr' + commit).removeClass("status6");
             $('#tr' + commit).addClass('status' + value);
             $('#votes' + commit).html(res);
         },
@@ -34,6 +35,7 @@ function markCommit(commit,value) {
 <option value="3" <% commit.status == 3 ? "selected" : "" %>>Seconded</option>
 <option value="4" <% commit.status == 4 ? "selected" : "" %>>Approved</option>
 <option value="5" <% commit.status == 5 ? "selected" : "" %>>Cherry-picked</option>
+<option value="6" <% commit.status == 6 ? "selected" : "" %>>To be discussed</option>
 </select>
 </td>
 <td><a href="http://perl5.git.perl.org/perl.git/commitdiff/<% commit.sha1 %>" target="perldiff"><% commit.sha1 %></a></td>

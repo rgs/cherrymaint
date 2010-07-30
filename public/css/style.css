@@ -20,5 +20,6 @@ tr.status2 { background-color: #5F5; color: black }
 tr.status3 { background-color: #FF5; color: black }
 tr.status4 { background-color: #F55; color: black }
 tr.status5 { background-color: #55F; color: black }
+tr.status6 { background-color: #F5F; color: black }
 
 td.vote { font-size: small }

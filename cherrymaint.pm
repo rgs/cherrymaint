@@ -92,7 +92,7 @@ get '/mark' => sub {
     my $commit = params->{commit};
     my $value = params->{value};
     $commit =~ /^[0-9a-f]+$/ or die;
-    $value =~ /^[0-5]$/ or die;
+    $value =~ /^[0-6]$/ or die;
     my $user = get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
     my $data = load_datafile;
     my $state = $data->{$commit};
@@ -101,7 +101,7 @@ get '/mark' => sub {
             $value,
             [ ],
         ];
-    } elsif ($value == 1) { # Rejected
+    } elsif ($value == 1 or $value == 6) { # Rejected or To be discussed
         $state = [
             $value,
             [ $user ],
