@@ -145,8 +145,9 @@ get '/' => sub {
             $current_page = [ 0 => -1 ];
         }
     } else {
-        $page  = 0;
-        @pages = $current_page = [ 0 => $#log ];
+        $page = 0;
+        $current_page = [ 0 => $#log ];
+        @pages = [ 0, 1 ];
     }
 
     my ($start, $end) = @$current_page;
