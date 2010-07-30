@@ -138,12 +138,15 @@ get '/' => sub {
 
 get '/mark' => sub {
     my $commit = params->{commit};
+    $commit =~ /^[0-9a-f]+$/ or die 'Invalid commit sha1';
+
     my $value = params->{value};
-    $commit =~ /^[0-9a-f]+$/ or die;
-    $value =~ /^[0-6]$/ or die;
+    $value =~ /^[0-6]$/ or die 'Invalid grade value';
+
     my $user = get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
     my $lock = lock_datafile("$$-$user-mark");
     my $data = load_datafile;
+
     my $state = $data->{$commit};
     if ($value == 0) { # Unexamined
         $state = [
