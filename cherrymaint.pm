@@ -157,8 +157,8 @@ get '/mark' => sub {
         $state->[0] = $value;
     } else { # Vote
         my $old_value = $state->[0];
-        if (not defined $old_value or $old_value < 2) {
-            # Voting from unexamined / rejected
+        if (not defined $old_value or $old_value < 2 or $old_value == 6) {
+            # Voting from unexamined / rejected / to be discussed
             $state = [
                 2,
                 [ $user ],
