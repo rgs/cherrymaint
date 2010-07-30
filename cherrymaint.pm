@@ -158,6 +158,7 @@ get '/mark' => sub {
     } else { # Vote
         my $old_value = $state->[0];
         if (not defined $old_value or $old_value < 2) {
+            # Voting from unexamined / rejected
             $state = [
                 2,
                 [ $user ],
@@ -165,11 +166,13 @@ get '/mark' => sub {
         } elsif ($old_value < 5) {
             my @votes = @{ $state->[1] || [] };
             if ($old_value < $value) {
+                # Upvoting, only bump the vote by 1 if the user hasn't voted yet
                 unless (any_eq $user => @votes) {
                     $state->[0] = $old_value + 1;
                     push @{ $state->[1] }, $user;
                 }
             } elsif ($old_value > $value) {
+                # Downvoting, only drop the vote by 1 if the user has voted
                 my $idx = 0;
                 for (@votes) {
                     last if $user eq $_;
