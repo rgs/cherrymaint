@@ -57,8 +57,10 @@ function markCommit(commit,value) {
 <td><a href="http://perl5.git.perl.org/perl.git/commitdiff/<% commit.sha1 %>" target="perldiff"><% commit.sha1 %></a></td>
 <td><% commit.msg %></td>
 <td class="vote" id="votes<% commit.sha1 %>">
-<% FOREACH user IN commit.votes %>
-<% user %>
+<% FILTER collapse %>
+ <% FOREACH user IN commit.votes %>
+  <% user %>
+ <% END %>
 <% END %>
 </td>
 </tr>
