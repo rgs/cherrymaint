@@ -14,11 +14,6 @@ associated to a status: Unexamined, Rejected, Requested, Seconded,
 Approved, and Cherry-picked. The statuses are currently saved in a flat
 file, which is not very scalable.
 
-what it doesn't do
-------------------
-
-No access control or authentification.
-
 what it requires to work
 ------------------------
 
