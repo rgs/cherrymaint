@@ -79,7 +79,7 @@ sub get_user {
         my @parts = split ' ';
         next unless $#parts >= 7 and $parts[1] eq $remote;
         my $user = getpwuid $parts[7];
-        die 'Invalid user' unless defined $user;
+        die 'Invalid user' unless defined $user and $user !~ /\s/;
         return $user;
     }
     die "Couldn't find the current user";
