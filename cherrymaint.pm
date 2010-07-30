@@ -163,6 +163,9 @@ get '/mark' => sub {
                 2,
                 [ $user ],
             ];
+        } elsif ($old_value == 5) {
+            # Downvoting from cherry-picked, revert to the "approved" state
+            $state->[0] = 4;
         } elsif ($old_value < 5) {
             my @votes = @{ $state->[1] || [] };
             if ($old_value < $value) {
