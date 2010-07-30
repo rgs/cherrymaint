@@ -166,8 +166,16 @@ get '/mark' => sub {
                 [ $user ],
             ];
         } elsif ($old_value == 5) {
-            # Downvoting from cherry-picked, revert to the "approved" state
-            $state->[0] = 4;
+            # Downvoting from cherry-picked : revert to the state corresponding
+            # to the number of stored voters
+            my @votes = @{ $state->[1] || [] };
+            my $votes = @votes;
+            unless (any_eq $user => @votes) {
+                # The current user hasn't voted yet, revert to one grade above
+                push @{ $state->[1] }, $user;
+                ++$votes;
+            }
+            $state->[0] = ($votes <= 3) ? (1 + $votes) : 4;
         } elsif ($old_value < 5) {
             my @votes = @{ $state->[1] || [] };
             if ($old_value < $value) {
