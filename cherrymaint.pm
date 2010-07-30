@@ -104,6 +104,7 @@ sub get_log {
         $message = encode_entities($message);
         push @log, [ $commit, $message ];
     }
+    %cache = (); # Keep only one entry in the cache
     $cache{$from}{$to} = \@log;
     return @log;
 }
