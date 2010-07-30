@@ -84,24 +84,45 @@ sub get_user {
     return;
 }
 
+my %cache;
+
+sub get_log {
+    my $from = qx($GIT log --pretty=format:%H -1 $STARTPOINT);
+    my $to   = qx($GIT log --pretty=format:%H -1 $ENDPOINT);
+    my $cached = $cache{$from}{$to};
+    return @$cached if defined $cached;
+
+    local $ENV{PAGER} = '';
+    open my $fh, '-|', $GIT, qw(log --no-color --oneline --no-merges),
+                             "$from..$to"
+         or die $!;
+    my @log;
+    while (<$fh>) {
+        chomp;
+        my ($commit, $message) = split / /, $_, 2;
+        $commit =~ /^[0-9a-f]+$/ or die;
+        $message = encode_entities($message);
+        push @log, [ $commit, $message ];
+    }
+    $cache{$from}{$to} = \@log;
+    return @log;
+}
+
 get '/' => sub {
     my $user = get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
-    my @log  = qx($GIT log --no-color --oneline --no-merges $STARTPOINT..$ENDPOINT);
+    my @log  = get_log;
     my $data = do {
         my $lock = lock_datafile("$$-$user");
         load_datafile;
     };
     my @commits;
     for my $log (@log) {
-        chomp $log;
-        my ($commit, $message) = split / /, $log, 2;
-        $commit =~ /^[0-9a-f]+$/ or die;
-        $message = encode_entities($message);
+        my $commit = $log->[0];
         my $status = $data->{$commit}->[0] || 0;
         my $votes  = $data->{$commit}->[1];
         push @commits, {
             sha1   => $commit,
-            msg    => $message,
+            msg    => $log->[1],
             status => $status,
             votes  => $votes,
         };
