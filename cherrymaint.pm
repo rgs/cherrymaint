@@ -3,12 +3,14 @@ use Dancer;
 use HTML::Entities;
 use Socket qw/inet_aton/;
 use List::Util qw/min max/;
+use Fcntl qw/LOCK_EX LOCK_UN/;
 
 my $BLEADGITHOME = config->{gitroot};
 my $STARTPOINT = config->{startpoint};
 my $ENDPOINT = config->{endpoint};
 my $GIT = "/usr/local/bin/git";
 my $DATAFILE = "$ENV{HOME}/cherrymaint.db";
+my $LOCK     = "$ENV{HOME}/cherrymaint.lock";
 
 chdir $BLEADGITHOME or die "Can't chdir to $BLEADGITHOME: $!\n";
 
@@ -45,6 +47,25 @@ sub save_datafile {
     close $fh;
 }
 
+sub lock_datafile {
+    my ($id) = @_;
+    open my $fh, '>', $LOCK or die $!;
+    flock $fh, LOCK_EX      or die $!;
+    print $fh "$id\n";
+    return bless { fh => $fh }, 'cherrymaint::lock';
+}
+
+sub cherrymaint::lock::DESTROY {
+    my ($lock) = @_;
+    my $fh = $lock->{fh};
+    flock $fh, LOCK_UN or die $!;
+    close $fh;
+}
+
+sub unlock_datafile {
+    $_[0]->DESTROY;
+}
+
 sub get_user {
     my ($addr, $port) = @_;
     $addr      = sprintf '%08X', unpack 'L', inet_aton $addr;
@@ -66,7 +87,10 @@ sub get_user {
 get '/' => sub {
     my $user = get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
     my @log  = qx($GIT log --no-color --oneline --no-merges $STARTPOINT..$ENDPOINT);
-    my $data = load_datafile;
+    my $data = do {
+        my $lock = lock_datafile("$$-$user");
+        load_datafile;
+    };
     my @commits;
     for my $log (@log) {
         chomp $log;
@@ -94,6 +118,7 @@ get '/mark' => sub {
     $commit =~ /^[0-9a-f]+$/ or die;
     $value =~ /^[0-6]$/ or die;
     my $user = get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
+    my $lock = lock_datafile("$$-$user-mark");
     my $data = load_datafile;
     my $state = $data->{$commit};
     if ($value == 0) { # Unexamined
