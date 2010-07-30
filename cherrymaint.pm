@@ -200,7 +200,7 @@ get '/mark' => sub {
     }
     $data->{$commit} = $state;
     save_datafile($data);
-    return join ' ', @{ $state->[1] || [] };
+    return join ' ', $state->[0], @{ $state->[1] || [] };
 };
 
 true;

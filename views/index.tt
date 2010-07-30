@@ -1,4 +1,13 @@
 <script type="text/javascript">
+var statusList = [
+ 'Unexamined',
+ 'Rejected',
+ 'Requested',
+ 'Seconded',
+ 'Approved',
+ 'Cherry-picked',
+ 'To be discussed',
+];
 function markCommit(commit,value) {
     $.ajax({
         url: '/mark?commit=' + commit + '&value=' + value,
@@ -7,15 +16,22 @@ function markCommit(commit,value) {
         cache: false,
         async: false,
         success: function(res) {
-            $('#tr' + commit).removeClass("status0");
-            $('#tr' + commit).removeClass("status1");
-            $('#tr' + commit).removeClass("status2");
-            $('#tr' + commit).removeClass("status3");
-            $('#tr' + commit).removeClass("status4");
-            $('#tr' + commit).removeClass("status5");
-            $('#tr' + commit).removeClass("status6");
-            $('#tr' + commit).addClass('status' + value);
-            $('#votes' + commit).html(res);
+            var tokens = res.split(' ');
+            var status = tokens.shift();
+            var voters = tokens.join(' ');
+            for (var i = 0; i < statusList.length; i++) {
+                $('#tr' + commit).removeClass("status" + i);
+            }
+            $('#tr' + commit).addClass('status' + status);
+            $('#votes' + commit).html(voters);
+            var options = '';
+            for (var i = 0; i < statusList.length; i++) {
+                var selected = i == status ? 'selected' : '';
+                options += '<option value="' + i + '" ' + selected + '>'
+                           + statusList[i]
+                           + '</option>';
+            }
+            $('#pick' + commit).html(options);
         },
         error: function(req, st, error) {
             alert("Couldn't update the DB");
@@ -28,7 +44,7 @@ function markCommit(commit,value) {
 <% FOREACH commit IN commits %>
 <tr id="tr<% commit.sha1 %>" class="status<% commit.status %>">
 <td>
-<select name="status<% commit.sha1 %>" onChange="markCommit('<% commit.sha1 %>',this.value)">
+<select id="pick<% commit.sha1 %>" onChange="markCommit('<% commit.sha1 %>',this.value)">
 <option value="0" <% commit.status == 0 ? "selected" : "" %>>Unexamined</option>
 <option value="1" <% commit.status == 1 ? "selected" : "" %>>Rejected</option>
 <option value="2" <% commit.status == 2 ? "selected" : "" %>>Requested</option>
