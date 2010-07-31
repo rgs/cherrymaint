@@ -129,7 +129,6 @@ get '/' => sub {
 
     my (@pages, $current_page);
     if ($limit) {
-        my $max_pages = @log / $limit;
         my $num = 0;
         for (my $start = 0; $start <= $#log; $start += $limit) {
             my $end = $start + $limit - 1;
