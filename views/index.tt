@@ -49,7 +49,7 @@ function reloadLimit(old_page, old_limit, new_limit) {
 </script>
 <p>Welcome, <% user %>. Please make yourself familiar with the
 <a href="http://perl5.git.perl.org/perl.git/blob_plain/refs/heads/blead:/pod/perlpolicy.pod">maintenance policy</a>
-before proceeding.
+before proceeding. We have some <a href="/stats">rudimentary statistics about the examination progress</a>.
 </p>
 <p class="pages">
 <% FILTER collapse %>
