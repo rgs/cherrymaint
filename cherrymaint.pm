@@ -134,6 +134,8 @@ sub calculate_vote_stats {
             $votes_by_user{$user}{total}++;
             if ($status == 1) {
                 $votes_by_user{$user}{rejected}++;
+            } elsif ($status == 6) {
+                $votes_by_user{$user}{discussion}++;
             } else {
                 $votes_by_user{$user}{voted}++;
             }
@@ -148,14 +150,14 @@ sub calculate_vote_stats {
                 keys %votes_by_user;
 
     my @statuses = qw(unexamined rejected requested
-                      seconded approved cherry_picked);
+                      seconded approved cherry_picked to_be_discussed);
 
     return {
         no_votes        => $no_votes,
         no_commits      => $no_commits,
         no_commits_done => $no_commits_done,
         users           => \@users,
-        (map { "no_" . $statuses[$_] => $commits_by_status[$_] } 0..5),
+        (map { "no_" . $statuses[$_] => $commits_by_status[$_] } 0..$#statuses),
     };
 }
 

@@ -12,14 +12,17 @@
   <tr class="status3"><td>Seconded:</td><td class="votes"><% no_seconded %></td></tr>
   <tr class="status4"><td>Approved:</td><td class="votes"><% no_approved %></td></tr>
   <tr class="status5"><td>Cherry-picked:</td><td class="votes"><% no_cherry_picked %></td></tr>
+  <tr class="status6"><td>To-be-discussed:</td><td class="votes"><% no_to_be_discussed %></td></tr>
 </ul>
 <table>
 
 <h3>Votes by user</h3>
 <table class="stats">
-<tr><th>User</th><th>Rejected</th><th>Voted</th></tr>
+<tr><th>User</th><th>Rejected</th><th>Voted</th><th>Marked for discussion</th></tr>
 <% FOREACH user IN users %>
-<tr><td><% user.name %></td><td class="votes"><% user.rejected %></td>
-    <td class="votes"><% user.voted %></td></tr>
+<tr><td><% user.name %></td>
+    <td class="votes"><% user.rejected %></td>
+    <td class="votes"><% user.voted %></td>
+    <td class="votes"><% user.discussion %></td></tr>
 <% END %>
 <table>
