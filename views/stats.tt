@@ -18,7 +18,10 @@
 
 <h3>Votes by user</h3>
 <table class="stats">
-<tr><th>User</th><th>Rejected</th><th>Voted</th><th>Marked for discussion</th></tr>
+<tr><th class="votes">User</th>
+    <th class="votes">Rejected</th>
+    <th class="votes">Voted</th>
+    <th class="votes">Marked for discussion</th></tr>
 <% FOREACH user IN users %>
 <tr><td><% user.name %></td>
     <td class="votes"><% user.rejected %></td>
