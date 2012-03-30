@@ -57,16 +57,18 @@ function toggleRejected() {
     }
 }
 </script>
+<% IF !ro %>
 <p>Welcome, <% user %>. Please make yourself familiar with the
 <a href="http://perl5.git.perl.org/perl.git/blob_plain/refs/heads/blead:/pod/perlpolicy.pod" target="_blank">maintenance policy</a>
 before proceeding. We have some <a href="/stats">rudimentary statistics about the examination progress</a>.
 <br />
+<% END %>
 <button onClick="javascript:toggleRejected()"><span id="togglerej">Hide</span> rejected commits</button>
 </p>
 <p class="pages">
 <% FILTER collapse %>
  <% IF cur_page > 0 %>
-<a href="/?page=<% cur_page - 1 %>&limit=<% limit %>">Newer</a>
+<a href="/?page=<% cur_page - 1 %>&limit=<% limit %>&ro=<% ro %>">Newer</a>
  <% ELSE %>
 Newer
  <% END %>
@@ -75,12 +77,12 @@ Newer
   <% IF page.1 %>
 <% page.0 %>
   <% ELSE %>
-<a href="/?page=<% page.0 %>&limit=<% limit %>"><% page.0 %></a>
+<a href="/?page=<% page.0 %>&limit=<% limit %>&ro=<% ro %>"><% page.0 %></a>
   <% END %>
  <% END %>
 -
  <% IF cur_page < last_page %>
-<a href="/?page=<% cur_page + 1 %>&limit=<% limit %>">Older</a>
+<a href="/?page=<% cur_page + 1 %>&limit=<% limit %>&ro=<% ro %>">Older</a>
  <% ELSE %>
 Older
  <% END %>
@@ -93,6 +95,15 @@ Older
 <% FOREACH commit IN commits %>
 <tr id="tr<% commit.sha1 %>" class="status<% commit.status %>">
 <td>
+<% IF ro %>
+<% commit.status == 0 ? "Unexamined" : "" %>
+<% commit.status == 1 ? "Rejected" : "" %>
+<% commit.status == 2 ? "Requested" : "" %>
+<% commit.status == 3 ? "Seconded" : "" %>
+<% commit.status == 4 ? "Approved" : "" %>
+<% commit.status == 5 ? "Cherry-picked" : "" %>
+<% commit.status == 6 ? "To be discussed" : "" %>
+<% ELSE %>
 <select id="pick<% commit.sha1 %>" onChange="markCommit('<% commit.sha1 %>',this.value)">
 <option value="0" <% commit.status == 0 ? "selected" : "" %>>Unexamined</option>
 <option value="1" <% commit.status == 1 ? "selected" : "" %>>Rejected</option>
@@ -102,6 +113,7 @@ Older
 <option value="5" <% commit.status == 5 ? "selected" : "" %>>Cherry-picked</option>
 <option value="6" <% commit.status == 6 ? "selected" : "" %>>To be discussed</option>
 </select>
+<% END %>
 </td>
 <td><a href="http://perl5.git.perl.org/perl.git/commitdiff/<% commit.sha1 %>" target="perldiff"><% commit.sha1 %></a></td>
 <td><% commit.msg %></td>

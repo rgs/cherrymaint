@@ -177,7 +177,7 @@ get '/' => sub {
     $limit = 250 unless defined $limit and $limit ne '';
     $limit =~ /^[0-9]+$/ or die 'Invalid limit';
 
-    my $user = get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
+    my $user = params->{ro} ? 'view' : get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
     my @log  = get_log;
     my $data = do {
         my $lock = lock_datafile("$$-$user");
@@ -228,6 +228,7 @@ get '/' => sub {
         cur_page  => $page,
         last_page => $#pages,
         pages     => \@pages,
+        ro        => params->{ro} ? 1 : 0,
     };
 };
 
