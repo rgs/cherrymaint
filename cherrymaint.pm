@@ -127,10 +127,9 @@ sub calculate_vote_stats {
     my @commits_by_status;
 
     for my $log (@$log) {
-        chomp $log;
-        my ($commit, $message) = split / /, $log, 2;
+        my ($commit, $message) = @$log;
         $no_commits++;
-        $commit =~ /^[0-9a-f]+$/ or die;
+        $commit =~ /^[0-9a-f]+$/ or die "<$commit> is not a SHA1";
         my $status = $data->{$commit}->[0] || 0;
         my $votes  = $data->{$commit}->[1];
         $commits_by_status[$status]++;
@@ -301,7 +300,7 @@ get '/mark' => sub {
 };
 
 get '/stats' => sub {
-    my @log  = qx($GIT log --no-color --oneline --no-merges $STARTPOINT..$ENDPOINT);
+    my @log = get_log;
     my $data = load_datafile;
     my $stats = calculate_vote_stats($data, \@log);
     template 'stats', $stats;
