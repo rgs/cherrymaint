@@ -8,6 +8,7 @@
 </head>
 <body>
 <div style="float:right">
+Branch in which cherry-picks will go:
 <% FOREACH b IN branches %>
 <% IF b == branch %>
 [<b><% b %></b>]

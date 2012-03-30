@@ -10,7 +10,7 @@ my $TESTING      = config->{testing}; # single-user mode, for testing
 my $GIT          = config->{gitpath};
 my $DATAFILE     = config->{datafile};
 my $LOCK         = config->{lock};
-my @BRANCHES     = sort keys %{config->{branches}};
+my @BRANCHES     = reverse sort keys %{config->{branches}};
 
 $_ = (glob)[0] for $GIT, $BLEADGITHOME, $DATAFILE, $LOCK;
 
@@ -23,7 +23,7 @@ sub any_eq {
 }
 
 sub branchname {
-    my $b = params->{branch} // 'blead';
+    my $b = params->{branch} // $BRANCHES[0];
     return $b if $b ~~ @BRANCHES;
     die "Invalid branch name";
 }

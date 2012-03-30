@@ -6,10 +6,10 @@ gitroot:    "/gitroot/perl.git"
 datafile:   "~/cherrymaint.db"
 lock:       "~/cherrymaint.lock"
 branches:
-    blead:
+    "maint-5.14":
         - "v5.14.0"
         - blead
-    "maint-5.14":
+    "maint-5.12":
         - "v5.12.0"
         - "maint-5.14"
 testing:    0
