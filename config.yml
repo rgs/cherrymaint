@@ -5,6 +5,7 @@ gitpath:    "/usr/bin/git"
 gitroot:    "/gitroot/perl.git"
 datafile:   "~/cherrymaint.db"
 lock:       "~/cherrymaint.lock"
+# branches : maintenance track name -> range [ start tag, end head ]
 branches:
     "maint-5.14":
         - "v5.14.0"
