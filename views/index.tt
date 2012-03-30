@@ -46,10 +46,22 @@ function reloadLimit(old_page, old_limit, new_limit) {
     }
     window.location = '/?page=' + new_page + '&limit=' + new_limit;
 }
+function toggleRejected() {
+    if ($('#togglerej').html() == 'Hide') {
+        $('#togglerej').html('Show');
+        $('.status1').fadeOut();
+    }
+    else {
+        $('#togglerej').html('Hide');
+        $('.status1').show();
+    }
+}
 </script>
 <p>Welcome, <% user %>. Please make yourself familiar with the
 <a href="http://perl5.git.perl.org/perl.git/blob_plain/refs/heads/blead:/pod/perlpolicy.pod" target="_blank">maintenance policy</a>
 before proceeding. We have some <a href="/stats">rudimentary statistics about the examination progress</a>.
+<br />
+<button onClick="javascript:toggleRejected()"><span id="togglerej">Hide</span> rejected commits</button>
 </p>
 <p class="pages">
 <% FILTER collapse %>
