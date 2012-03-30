@@ -1,7 +1,7 @@
 layout:     "main"
 logger:     "file"
 template:   template_toolkit
-gitpath:    "/usr/local/bin/git"
+gitpath:    "/usr/bin/git"
 gitroot:    "/gitroot/perl.git"
 datafile:   "~/cherrymaint.db"
 lock:       "~/cherrymaint.lock"
