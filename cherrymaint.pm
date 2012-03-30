@@ -37,10 +37,9 @@ sub load_datafile {
     while (<$fh>) {
         chomp;
         my ($branchstart, $commit, $value, @votes) = split ' ';
-        $data->{$commit} = [
+        $data->{"$commit,$branchstart"} = [
             0 + $value,
             [ @votes ],
-            $branchstart,
         ];
     }
     close $fh;
@@ -52,9 +51,10 @@ sub save_datafile {
     open my $fh, '>', $DATAFILE or die "Can't open $DATAFILE: $!";
     for my $k (keys %$data) {
         next unless $data->{$k};
-        my ($value, $votes, $branchstart) = @{ $data->{$k} };
+        my ($commit, $branchstart) = split /,/, $k;
+        my ($value, $votes) = @{ $data->{$k} };
         my @votes = @{ $votes || [] };
-        print $fh "$branchstart $k $value @votes\n";
+        print $fh "$branchstart $commit $value @votes\n";
     }
     close $fh;
 }
@@ -131,6 +131,7 @@ sub get_log {
 sub calculate_vote_stats {
     my $data = shift;
     my $log = shift;
+    my $branchname = branchname;
 
     my $no_commits      = 0;
     my $no_votes        = 0;
@@ -141,8 +142,8 @@ sub calculate_vote_stats {
         my ($commit, $message) = @$log;
         $no_commits++;
         $commit =~ /^[0-9a-f]+$/ or die "<$commit> is not a SHA1";
-        my $status = $data->{$commit}->[0] || 0;
-        my $votes  = $data->{$commit}->[1];
+        my $status = $data->{"$commit,$branchname"}->[0] || 0;
+        my $votes  = $data->{"$commit,$branchname"}->[1];
         $commits_by_status[$status]++;
         foreach my $user (@{$votes||[]}) {
             $no_votes++;
@@ -218,13 +219,14 @@ get '/' => sub {
     }
 
     my ($start, $end) = @$current_page;
+    my $branchname = branchname();
     my @commits;
     for my $i ($start .. $end) {
         next if $i > $#log;
         my $log    = $log[$i];
         my $commit = $log->[0];
-        my $status = $data->{$commit}->[0] || 0;
-        my $votes  = $data->{$commit}->[1];
+        my $status = $data->{"$commit,$branchname"}->[0] || 0;
+        my $votes  = $data->{"$commit,$branchname"}->[1];
         push @commits, {
             sha1   => $commit,
             msg    => $log->[1],
@@ -240,7 +242,7 @@ get '/' => sub {
         last_page => $#pages,
         pages     => \@pages,
         branches  => \@BRANCHES,
-        branch    => branchname(),
+        branch    => $branchname,
         ro        => params->{ro} ? 1 : 0,
     };
 };
@@ -255,19 +257,20 @@ get '/mark' => sub {
     my $user = get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
     my $lock = lock_datafile("$$-$user-mark");
     my $data = load_datafile;
+    my $branchname = branchname();
 
-    my $state = $data->{$commit};
+    my $state = $data->{"$commit,$branchname"};
     if ($value == 0) { # Unexamined
         $state = [
             $value,
             [ ],
-            branchname(),
+            $branchname,
         ];
     } elsif ($value == 1 or $value == 6) { # Rejected or To be discussed
         $state = [
             $value,
             [ $user ],
-            branchname(),
+            $branchname,
         ];
     } elsif ($value == 5) { # Cherry-picked
         if (defined $state) {
@@ -277,7 +280,7 @@ get '/mark' => sub {
             $state = [
                 $value,
                 [ $user ],
-                branchname(),
+                $branchname,
             ];
         }
     } else { # Vote
@@ -287,7 +290,7 @@ get '/mark' => sub {
             $state = [
                 2,
                 [ $user ],
-                branchname(),
+                $branchname,
             ];
         } elsif ($old_value == 5) {
             # Downvoting from cherry-picked : revert to the state corresponding
@@ -322,7 +325,7 @@ get '/mark' => sub {
             }
         }
     }
-    $data->{$commit} = $state;
+    $data->{"$commit,$branchname"} = $state;
     save_datafile($data);
     return join ' ', $state->[0], @{ $state->[1] || [] };
 };
