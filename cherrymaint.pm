@@ -14,7 +14,7 @@ chdir $BLEADGITHOME or die "Can't chdir to $BLEADGITHOME: $!\n";
 
 sub load_datafile {
     my $data = {};
-    open my $fh, '<', $DATAFILE or die $!;
+    open my $fh, '<', $DATAFILE or die "Can't open $DATAFILE: $!";
     while (<$fh>) {
         chomp;
         my ($commit, $value, @votes) = split ' ';
@@ -29,7 +29,7 @@ sub load_datafile {
 
 sub save_datafile {
     my ($data) = @_;
-    open my $fh, '>', $DATAFILE or die $!;
+    open my $fh, '>', $DATAFILE or die "Can't open $DATAFILE: $!";
     for my $k (keys %$data) {
         next unless $data->{$k};
         my ($value, $votes) = @{ $data->{$k} };
