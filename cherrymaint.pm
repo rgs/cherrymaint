@@ -8,7 +8,7 @@ my $BLEADGITHOME = config->{gitroot};
 my $STARTPOINT = config->{startpoint};
 my $ENDPOINT = config->{endpoint};
 my $TESTING = config->{testing}; # single-user mode, for testing
-my $GIT = "/usr/local/bin/git";
+my $GIT = config->{gitpath};
 my $DATAFILE = "$ENV{HOME}/cherrymaint.db";
 
 chdir $BLEADGITHOME or die "Can't chdir to $BLEADGITHOME: $!\n";
