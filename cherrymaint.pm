@@ -261,13 +261,13 @@ get '/mark' => sub {
         $state = [
             $value,
             [ ],
-            startpoint(),
+            branchname(),
         ];
     } elsif ($value == 1 or $value == 6) { # Rejected or To be discussed
         $state = [
             $value,
             [ $user ],
-            startpoint(),
+            branchname(),
         ];
     } elsif ($value == 5) { # Cherry-picked
         if (defined $state) {
@@ -277,7 +277,7 @@ get '/mark' => sub {
             $state = [
                 $value,
                 [ $user ],
-                startpoint(),
+                branchname(),
             ];
         }
     } else { # Vote
@@ -287,7 +287,7 @@ get '/mark' => sub {
             $state = [
                 2,
                 [ $user ],
-                startpoint(),
+                branchname(),
             ];
         } elsif ($old_value == 5) {
             # Downvoting from cherry-picked : revert to the state corresponding
