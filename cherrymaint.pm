@@ -136,7 +136,7 @@ sub calculate_vote_stats {
     my $no_commits      = 0;
     my $no_votes        = 0;
     my %votes_by_user;
-    my @commits_by_status;
+    my @commits_by_status = (0) x 6;
 
     for my $log (@$log) {
         my ($commit, $message) = @$log;
