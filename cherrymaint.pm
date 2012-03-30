@@ -331,6 +331,8 @@ get '/stats' => sub {
     my @log = get_log;
     my $data = load_datafile;
     my $stats = calculate_vote_stats($data, \@log);
+    $stats->{branches} = \@BRANCHES;
+    $stats->{branch} = branchname();
     template 'stats', $stats;
 };
 
