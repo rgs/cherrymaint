@@ -174,7 +174,7 @@ get '/' => sub {
     $page =~ /^[0-9]+$/ or die 'Invalid page number';
 
     my $limit = params->{limit};
-    $limit = 0 unless defined $limit;
+    $limit = 250 unless defined $limit and $limit ne '';
     $limit =~ /^[0-9]+$/ or die 'Invalid limit';
 
     my $user = get_user(@ENV{qw/REMOTE_ADDR REMOTE_PORT/});
