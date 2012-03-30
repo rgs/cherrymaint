@@ -223,15 +223,25 @@ get '/' => sub {
     my @commits;
     for my $i ($start .. $end) {
         next if $i > $#log;
-        my $log    = $log[$i];
-        my $commit = $log->[0];
-        my $status = $data->{"$commit,$branchname"}->[0] || 0;
-        my $votes  = $data->{"$commit,$branchname"}->[1];
+        my $log         = $log[$i];
+        my $commit      = $log->[0];
+        my $status      = $data->{"$commit,$branchname"}->[0] || 0;
+        my $votes       = $data->{"$commit,$branchname"}->[1];
+        my $hasvoted    = $votes ? any_eq($user => @$votes) : 0;
+        my $updownlabel;
+        my $NA = 'N/A';
+        if ($hasvoted) {
+            $updownlabel = [ $NA, $NA, '-1', '-1', '-1', $NA, $NA ]->[$status];
+        }
+        else {
+            $updownlabel = [ '+1', $NA, '+1', '+1', $NA, $NA, $NA ]->[$status];
+        }
         push @commits, {
-            sha1   => $commit,
-            msg    => $log->[1],
-            status => $status,
-            votes  => $votes,
+            sha1        => $commit,
+            msg         => $log->[1],
+            status      => $status,
+            votes       => $votes,
+            updownlabel => $updownlabel,
         };
     }
     template 'index', {

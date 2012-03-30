@@ -1,4 +1,19 @@
 <script type="text/javascript">
+function votesCount(commit) {
+    return $('#votes' + commit).html().split(' ').length;
+}
+function userHasVoted(user,commit) {
+    var votes  = $('#votes' + commit).html().split(' ');
+    for (var i = 0; i < votes.length; i++) {
+        if (votes[i] == user) {
+            return true;
+        }
+    }
+    return false;
+}
+function currentUserHasVoted(commit) {
+    return userHasVoted($('#username').val(), commit);
+}
 var statusList = [
  'Unexamined',
  'Rejected',
@@ -7,6 +22,24 @@ var statusList = [
  'Approved',
  'Cherry-picked',
  'To be discussed',
+];
+var upvoteMap = [
+ 2,
+ -1,
+ 3,
+ 4,
+ -1,
+ -1,
+ -1,
+];
+var downvoteMap = [
+ -1,
+ -1,
+ 0,
+ 2,
+ 3,
+ -1,
+ -1,
 ];
 function markCommit(commit,value) {
     $.ajax({
@@ -32,11 +65,28 @@ function markCommit(commit,value) {
                            + '</option>';
             }
             $('#pick' + commit).html(options);
+            var updownlabel = '';
+            var hasvoted = currentUserHasVoted(commit);
+            if (hasvoted) {
+                updownlabel = downvoteMap[status] >= 0 ? '-1' : 'N/A';
+            }
+            else {
+                updownlabel = upvoteMap[status] >= 0   ? '+1' : 'N/A';
+            }
+            $('#updown' + commit).html(updownlabel);
         },
         error: function(req, st, error) {
             alert("Couldn't update the DB");
         }
     });
+}
+function updownvoteCommit(commit) {
+    var value     = $('#pick' + commit).val();
+    var new_value = currentUserHasVoted(commit) ? downvoteMap[value]
+                                                : upvoteMap[value];
+    if (new_value >= 0) {
+        markCommit(commit, new_value);
+    }
 }
 function reloadLimit(old_page, old_limit, new_limit) {
     var start = old_page * old_limit;
@@ -58,6 +108,7 @@ function toggleRejected() {
 }
 </script>
 <% IF !ro %>
+<input type="hidden" id="username" value="<% user %>">
 <p>Welcome, <% user %>. Please make yourself familiar with the
 <a href="http://perl5.git.perl.org/perl.git/blob_plain/refs/heads/blead:/pod/perlpolicy.pod" target="_blank">maintenance policy</a>
 before proceeding. We have some
@@ -105,6 +156,7 @@ Older
 <% commit.status == 5 ? "Cherry-picked" : "" %>
 <% commit.status == 6 ? "To be discussed" : "" %>
 <% ELSE %>
+<button id="updown<% commit.sha1 %>" onClick="updownvoteCommit('<% commit.sha1 %>')" style="width: 4em"><% commit.updownlabel %></button>
 <select id="pick<% commit.sha1 %>" onChange="markCommit('<% commit.sha1 %>',this.value)">
 <option value="0" <% commit.status == 0 ? "selected" : "" %>>Unexamined</option>
 <option value="1" <% commit.status == 1 ? "selected" : "" %>>Rejected</option>
