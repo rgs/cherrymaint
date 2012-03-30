@@ -5,6 +5,11 @@ gitpath:    "/usr/bin/git"
 gitroot:    "/gitroot/perl.git"
 datafile:   "~/cherrymaint.db"
 lock:       "~/cherrymaint.lock"
-startpoint: "v5.14.0"
-endpoint:   blead
+branches:
+    blead:
+        - "v5.14.0"
+        - blead
+    "maint-5.14":
+        - "v5.12.0"
+        - "maint-5.14"
 testing:    0

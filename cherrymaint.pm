@@ -10,8 +10,8 @@ my $TESTING      = config->{testing}; # single-user mode, for testing
 my $GIT          = config->{gitpath};
 my $DATAFILE     = config->{datafile};
 my $LOCK         = config->{lock};
-my $STARTPOINT   = config->{startpoint};
-my $ENDPOINT     = config->{endpoint};
+my $STARTPOINT   = config->{branches}{blead}[0];
+my $ENDPOINT     = config->{branches}{blead}[1];
 
 $_ = (glob)[0] for $GIT, $BLEADGITHOME, $DATAFILE, $LOCK;
 
