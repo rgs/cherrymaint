@@ -25,3 +25,8 @@ tr.status5 { background-color: #55F; color: black }
 tr.status6 { background-color: #F5F; color: black }
 
 td.vote { font-size: small }
+
+table.stats { border-spacing: 0.5em 0em }
+table.stats td { padding: 0.5em; }
+td.votes { text-align: center }
+

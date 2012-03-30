@@ -117,6 +117,56 @@ sub get_log {
     return @log;
 }
 
+sub calculate_vote_stats {
+    my $data = shift;
+    my $log = shift;
+
+    my $no_commits      = 0;
+    my $no_votes        = 0;
+    my %votes_by_user;
+    my @commits_by_status;
+
+    for my $log (@$log) {
+        chomp $log;
+        my ($commit, $message) = split / /, $log, 2;
+        $no_commits++;
+        $commit =~ /^[0-9a-f]+$/ or die;
+        my $status = $data->{$commit}->[0] || 0;
+        my $votes  = $data->{$commit}->[1];
+        $commits_by_status[$status]++;
+        foreach my $user (@{$votes||[]}) {
+            $no_votes++;
+            $votes_by_user{$user} ||= {name => $user};
+            $votes_by_user{$user}{total}++;
+            if ($status == 1) {
+                $votes_by_user{$user}{rejected}++;
+            } elsif ($status == 6) {
+                $votes_by_user{$user}{discussion}++;
+            } else {
+                $votes_by_user{$user}{voted}++;
+            }
+        }
+    }
+
+    # rejected or cherry-picked is considered done.
+    my $no_commits_done = $commits_by_status[1] + $commits_by_status[5];
+
+    my @users = map { $votes_by_user{$_} }
+                sort { $votes_by_user{$b}{total} <=> $votes_by_user{$a}{total} }
+                keys %votes_by_user;
+
+    my @statuses = qw(unexamined rejected requested
+                      seconded approved cherry_picked to_be_discussed);
+
+    return {
+        no_votes        => $no_votes,
+        no_commits      => $no_commits,
+        no_commits_done => $no_commits_done,
+        users           => \@users,
+        (map { "no_" . $statuses[$_] => $commits_by_status[$_] } 0..$#statuses),
+    };
+}
+
 get '/' => sub {
     my $page = params->{page};
     $page = 0 unless defined $page;
@@ -248,6 +298,13 @@ get '/mark' => sub {
     $data->{$commit} = $state;
     save_datafile($data);
     return join ' ', $state->[0], @{ $state->[1] || [] };
+};
+
+get '/stats' => sub {
+    my @log  = qx($GIT log --no-color --oneline --no-merges $STARTPOINT..$ENDPOINT);
+    my $data = load_datafile;
+    my $stats = calculate_vote_stats($data, \@log);
+    template 'stats', $stats;
 };
 
 true;

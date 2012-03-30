@@ -1,0 +1,31 @@
+<h2>Commit / vote statistics</h2>
+<p>
+  There are a total of <% no_commits %> commits and <% no_votes %> votes.
+  We have <% no_commits - no_commits_done %> commits to go...
+</p>
+
+<h3>Commits by status</h3>
+<table class="stats">
+  <tr class="status0"><td>Unexamined:</td><td class="votes"><% no_unexamined %></td></tr>
+  <tr class="status1"><td>Rejected:</td><td class="votes"><% no_rejected %></td></tr>
+  <tr class="status2"><td>Requested:</td><td class="votes"><% no_requested %></td></tr>
+  <tr class="status3"><td>Seconded:</td><td class="votes"><% no_seconded %></td></tr>
+  <tr class="status4"><td>Approved:</td><td class="votes"><% no_approved %></td></tr>
+  <tr class="status5"><td>Cherry-picked:</td><td class="votes"><% no_cherry_picked %></td></tr>
+  <tr class="status6"><td>To-be-discussed:</td><td class="votes"><% no_to_be_discussed %></td></tr>
+</ul>
+<table>
+
+<h3>Votes by user</h3>
+<table class="stats">
+<tr><th class="votes">User</th>
+    <th class="votes">Rejected</th>
+    <th class="votes">Voted</th>
+    <th class="votes">Marked for discussion</th></tr>
+<% FOREACH user IN users %>
+<tr><td><% user.name %></td>
+    <td class="votes"><% user.rejected %></td>
+    <td class="votes"><% user.voted %></td>
+    <td class="votes"><% user.discussion %></td></tr>
+<% END %>
+<table>
