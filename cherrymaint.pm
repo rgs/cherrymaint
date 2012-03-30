@@ -7,6 +7,7 @@ use List::Util qw/min max/;
 my $BLEADGITHOME = config->{gitroot};
 my $STARTPOINT = config->{startpoint};
 my $ENDPOINT = config->{endpoint};
+my $TESTING = config->{testing}; # single-user mode, for testing
 my $GIT = "/usr/local/bin/git";
 my $DATAFILE = "$ENV{HOME}/cherrymaint.db";
 
@@ -40,6 +41,10 @@ sub save_datafile {
 }
 
 sub get_user {
+    if ($TESTING) {
+        my ($user) = getpwuid $<;
+        return $user;
+    }
     my ($addr, $port) = @_;
     $addr      = sprintf '%08X', unpack 'L', inet_aton $addr;
     $port      = sprintf '%04X', $port;
