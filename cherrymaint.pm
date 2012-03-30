@@ -70,6 +70,7 @@ get '/' => sub {
     for my $log (@log) {
         chomp $log;
         my ($commit, $message) = split / /, $log, 2;
+        utf8::decode $message;
         $commit =~ /^[0-9a-f]+$/ or die;
         $message = encode_entities($message);
         my $status = $data->{$commit}->[0] || 0;
