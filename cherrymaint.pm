@@ -260,13 +260,13 @@ get '/mark' => sub {
     my $branchname = branchname();
 
     my $state = $data->{"$commit,$branchname"};
-    if ($value == 0) { # Unexamined
+    if ($value == 0 or $value == 6) { # Unexamined or To be discussed
         $state = [
             $value,
             [ ],
             $branchname,
         ];
-    } elsif ($value == 1 or $value == 6) { # Rejected or To be discussed
+    } elsif ($value == 1) {
         $state = [
             $value,
             [ $user ],
