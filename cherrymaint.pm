@@ -162,6 +162,8 @@ sub calculate_vote_stats {
         no_commits      => $no_commits,
         no_commits_done => $no_commits_done,
         users           => \@users,
+        startpoint      => $STARTPOINT,
+        endpoint        => $ENDPOINT,
         (map { "no_" . $statuses[$_] => $commits_by_status[$_] } 0..$#statuses),
     };
 }
