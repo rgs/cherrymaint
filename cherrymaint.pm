@@ -100,7 +100,7 @@ sub get_log {
     return @$cached if defined $cached;
 
     local $ENV{PAGER} = '';
-    open my $fh, '-|', $GIT, qw(log --no-color --oneline --no-merges),
+    open my $fh, '-|', $GIT, qw(log --no-color --pretty=oneline --abbrev-commit --no-merges),
                              "$from..$to"
          or die $!;
     my @log;
