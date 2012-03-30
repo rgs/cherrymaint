@@ -10,8 +10,7 @@ my $TESTING      = config->{testing}; # single-user mode, for testing
 my $GIT          = config->{gitpath};
 my $DATAFILE     = config->{datafile};
 my $LOCK         = config->{lock};
-my $STARTPOINT   = config->{branches}{blead}[0];
-my $ENDPOINT     = config->{branches}{blead}[1];
+my @BRANCHES     = sort keys %{config->{branches}};
 
 $_ = (glob)[0] for $GIT, $BLEADGITHOME, $DATAFILE, $LOCK;
 
@@ -22,6 +21,15 @@ sub any_eq {
     $str eq $_ and return 1 for @_;
     0;
 }
+
+sub branchname {
+    my $b = params->{branch} // 'blead';
+    return $b if $b ~~ @BRANCHES;
+    die "Invalid branch name";
+}
+sub  startpoint { branchpoint(0) }
+sub    endpoint { branchpoint(1) }
+sub branchpoint { config->{branches}{branchname()}[$_[0]] }
 
 sub load_datafile {
     my $data = {};
@@ -95,8 +103,10 @@ sub get_user {
 my %cache;
 
 sub get_log {
-    my $from = qx($GIT log --pretty=format:%H -1 $STARTPOINT);
-    my $to   = qx($GIT log --pretty=format:%H -1 $ENDPOINT);
+    my $sp = startpoint;
+    my $ep = endpoint;
+    my $from = qx($GIT log --pretty=format:%H -1 $sp);
+    my $to   = qx($GIT log --pretty=format:%H -1 $ep);
     my $cached = $cache{$from}{$to};
     return @$cached if defined $cached;
 
@@ -163,8 +173,8 @@ sub calculate_vote_stats {
         no_commits      => $no_commits,
         no_commits_done => $no_commits_done,
         users           => \@users,
-        startpoint      => $STARTPOINT,
-        endpoint        => $ENDPOINT,
+        startpoint      => startpoint(),
+        endpoint        => endpoint(),
         (map { "no_" . $statuses[$_] => $commits_by_status[$_] } 0..$#statuses),
     };
 }
@@ -229,6 +239,8 @@ get '/' => sub {
         cur_page  => $page,
         last_page => $#pages,
         pages     => \@pages,
+        branches  => \@BRANCHES,
+        branch    => branchname(),
         ro        => params->{ro} ? 1 : 0,
     };
 };
@@ -249,13 +261,13 @@ get '/mark' => sub {
         $state = [
             $value,
             [ ],
-            $STARTPOINT,
+            startpoint(),
         ];
     } elsif ($value == 1 or $value == 6) { # Rejected or To be discussed
         $state = [
             $value,
             [ $user ],
-            $STARTPOINT,
+            startpoint(),
         ];
     } elsif ($value == 5) { # Cherry-picked
         if (defined $state) {
@@ -265,7 +277,7 @@ get '/mark' => sub {
             $state = [
                 $value,
                 [ $user ],
-                $STARTPOINT,
+                startpoint(),
             ];
         }
     } else { # Vote
@@ -275,7 +287,7 @@ get '/mark' => sub {
             $state = [
                 2,
                 [ $user ],
-                $STARTPOINT,
+                startpoint(),
             ];
         } elsif ($old_value == 5) {
             # Downvoting from cherry-picked : revert to the state corresponding

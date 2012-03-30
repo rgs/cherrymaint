@@ -10,7 +10,7 @@ var statusList = [
 ];
 function markCommit(commit,value) {
     $.ajax({
-        url: '/mark?commit=' + commit + '&value=' + value,
+        url: '/mark?commit=' + commit + '&value=' + value + '&branch=<% branch %>',
         type: 'GET',
         dataType: 'html',
         cache: false,
@@ -60,7 +60,8 @@ function toggleRejected() {
 <% IF !ro %>
 <p>Welcome, <% user %>. Please make yourself familiar with the
 <a href="http://perl5.git.perl.org/perl.git/blob_plain/refs/heads/blead:/pod/perlpolicy.pod" target="_blank">maintenance policy</a>
-before proceeding. We have some <a href="/stats">rudimentary statistics about the examination progress</a>.
+before proceeding. We have some
+<a href="/stats?branch=<% branch %>">rudimentary statistics about the examination progress</a>.
 <br />
 <% END %>
 <button onClick="javascript:toggleRejected()"><span id="togglerej">Hide</span> rejected commits</button>
@@ -68,7 +69,7 @@ before proceeding. We have some <a href="/stats">rudimentary statistics about th
 <p class="pages">
 <% FILTER collapse %>
  <% IF cur_page > 0 %>
-<a href="/?page=<% cur_page - 1 %>&limit=<% limit %>&ro=<% ro %>">Newer</a>
+<a href="/?page=<% cur_page - 1 %>&limit=<% limit %>&ro=<% ro %>&branch=<% branch %>">Newer</a>
  <% ELSE %>
 Newer
  <% END %>
@@ -77,12 +78,12 @@ Newer
   <% IF page.1 %>
 <% page.0 %>
   <% ELSE %>
-<a href="/?page=<% page.0 %>&limit=<% limit %>&ro=<% ro %>"><% page.0 %></a>
+<a href="/?page=<% page.0 %>&limit=<% limit %>&ro=<% ro %>&branch=<% branch %>"><% page.0 %></a>
   <% END %>
  <% END %>
 -
  <% IF cur_page < last_page %>
-<a href="/?page=<% cur_page + 1 %>&limit=<% limit %>&ro=<% ro %>">Older</a>
+<a href="/?page=<% cur_page + 1 %>&limit=<% limit %>&ro=<% ro %>&branch=<% branch %>">Older</a>
  <% ELSE %>
 Older
  <% END %>

@@ -7,7 +7,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<h1><a href="/?ro=<% ro %>" style="text-decoration:none">cherrymaint</a></h1>
+<div style="float:right">
+<% FOREACH b IN branches %>
+<% IF b == branch %>
+[<b><% b %></b>]
+<% ELSE %>
+[<a href="/?ro=<% ro %>&branch=<% b %>"><% b %></a>]
+<% END %>
+<% END %>
+</div>
+<h1><a href="/?ro=<% ro %>&branch=<% branch %>" style="text-decoration:none">cherrymaint</a></h1>
 <div id="content">
 <p><% content %></p>
 </div>
