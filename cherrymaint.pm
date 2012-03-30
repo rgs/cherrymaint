@@ -28,10 +28,11 @@ sub load_datafile {
     open my $fh, '<', $DATAFILE or die "Can't open $DATAFILE: $!";
     while (<$fh>) {
         chomp;
-        my ($commit, $value, @votes) = split ' ';
+        my ($branchstart, $commit, $value, @votes) = split ' ';
         $data->{$commit} = [
             0 + $value,
-            \@votes,
+            [ @votes ],
+            $branchstart,
         ];
     }
     close $fh;
@@ -43,9 +44,9 @@ sub save_datafile {
     open my $fh, '>', $DATAFILE or die "Can't open $DATAFILE: $!";
     for my $k (keys %$data) {
         next unless $data->{$k};
-        my ($value, $votes) = @{ $data->{$k} };
+        my ($value, $votes, $branchstart) = @{ $data->{$k} };
         my @votes = @{ $votes || [] };
-        print $fh "$k $value @votes\n";
+        print $fh "$branchstart $k $value @votes\n";
     }
     close $fh;
 }
@@ -248,14 +249,25 @@ get '/mark' => sub {
         $state = [
             $value,
             [ ],
+            $STARTPOINT,
         ];
     } elsif ($value == 1 or $value == 6) { # Rejected or To be discussed
         $state = [
             $value,
             [ $user ],
+            $STARTPOINT,
         ];
     } elsif ($value == 5) { # Cherry-picked
-        $state->[0] = $value;
+        if (defined $state) {
+            $state->[0] = $value; # don't override list of users
+        }
+        else {
+            $state = [
+                $value,
+                [ $user ],
+                $STARTPOINT,
+            ];
+        }
     } else { # Vote
         my $old_value = $state->[0];
         if (not defined $old_value or $old_value < 2 or $old_value == 6) {
@@ -263,6 +275,7 @@ get '/mark' => sub {
             $state = [
                 2,
                 [ $user ],
+                $STARTPOINT,
             ];
         } elsif ($old_value == 5) {
             # Downvoting from cherry-picked : revert to the state corresponding
