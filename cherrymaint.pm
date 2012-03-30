@@ -195,6 +195,10 @@ get '/' => sub {
         my $lock = lock_datafile("$$-$user");
         load_datafile;
     };
+    my $branchname = branchname();
+    if (params->{filt}) {
+        @log = grep { ($data->{"$_->[0],$branchname"}[0] // 0) > 1 } @log;
+    }
 
     my (@pages, $current_page);
     if ($limit) {
@@ -219,7 +223,6 @@ get '/' => sub {
     }
 
     my ($start, $end) = @$current_page;
-    my $branchname = branchname();
     my @commits;
     for my $i ($start .. $end) {
         next if $i > $#log;
@@ -254,6 +257,7 @@ get '/' => sub {
         branches  => \@BRANCHES,
         branch    => $branchname,
         ro        => params->{ro} ? 1 : 0,
+        filt      => params->{filt} ? 1 : 0,
     };
 };
 
@@ -346,6 +350,7 @@ get '/stats' => sub {
     my $stats = calculate_vote_stats($data, \@log);
     $stats->{branches} = \@BRANCHES;
     $stats->{branch} = branchname();
+    $stats->{filt} = params->{filt} ? 1 : 0;
     template 'stats', $stats;
 };
 

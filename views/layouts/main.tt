@@ -13,11 +13,11 @@ Branch in which cherry-picks will go:
 <% IF b == branch %>
 [<b><% b %></b>]
 <% ELSE %>
-[<a href="/?ro=<% ro %>&branch=<% b %>"><% b %></a>]
+[<a href="/?ro=<% ro %>&branch=<% b %>&filt=<% filt %>"><% b %></a>]
 <% END %>
 <% END %>
 </div>
-<h1><a href="/?ro=<% ro %>&branch=<% branch %>" style="text-decoration:none">cherrymaint</a></h1>
+<h1><a href="/?ro=<% ro %>&branch=<% branch %>&filt=<% filt %>" style="text-decoration:none">cherrymaint</a></h1>
 <div id="content">
 <p><% content %></p>
 </div>

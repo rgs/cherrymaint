@@ -94,7 +94,7 @@ function reloadLimit(old_page, old_limit, new_limit) {
     if (new_limit != 0) {
         new_page = Math.floor(start / new_limit);
     }
-    window.location = '/?page=' + new_page + '&limit=' + new_limit;
+    window.location = '/?page=' + new_page + '&limit=' + new_limit + '&branch=<% branch %>&filt=<% filt %>';
 }
 function toggleRejected() {
     if ($('#togglerej').html() == 'Hide') {
@@ -106,21 +106,29 @@ function toggleRejected() {
         $('.status1').show();
     }
 }
+function toggleFiltered() {
+    document.location.href = document.location.href.replace(/&?filt=\d*/,'') + '&filt=<% !filt %>';
+}
 </script>
 <% IF !ro %>
 <input type="hidden" id="username" value="<% user %>">
 <p>Welcome, <% user %>. Please make yourself familiar with the
 <a href="http://perl5.git.perl.org/perl.git/blob_plain/refs/heads/blead:/pod/perlpolicy.pod" target="_blank">maintenance policy</a>
 before proceeding. We have some
-<a href="/stats?branch=<% branch %>">rudimentary statistics about the examination progress</a>.
+<a href="/stats?branch=<% branch %>&filt=<% filt %>">rudimentary statistics about the examination progress</a>.
 <br />
 <% END %>
+<input onChange="toggleFiltered()" type="checkbox" <% IF filt %>checked<% END %> />
+Filter out rejected and unexamined commits
+<% UNLESS filt %>
+|
 <button onClick="javascript:toggleRejected()"><span id="togglerej">Hide</span> rejected commits</button>
+<% END %>
 </p>
 <p class="pages">
 <% FILTER collapse %>
  <% IF cur_page > 0 %>
-<a href="/?page=<% cur_page - 1 %>&limit=<% limit %>&ro=<% ro %>&branch=<% branch %>">Newer</a>
+<a href="/?page=<% cur_page - 1 %>&limit=<% limit %>&ro=<% ro %>&branch=<% branch %>&filt=<% filt %>">Newer</a>
  <% ELSE %>
 Newer
  <% END %>
@@ -129,12 +137,12 @@ Newer
   <% IF page.1 %>
 <% page.0 %>
   <% ELSE %>
-<a href="/?page=<% page.0 %>&limit=<% limit %>&ro=<% ro %>&branch=<% branch %>"><% page.0 %></a>
+<a href="/?page=<% page.0 %>&limit=<% limit %>&ro=<% ro %>&branch=<% branch %>&filt=<% filt %>"><% page.0 %></a>
   <% END %>
  <% END %>
 -
  <% IF cur_page < last_page %>
-<a href="/?page=<% cur_page + 1 %>&limit=<% limit %>&ro=<% ro %>&branch=<% branch %>">Older</a>
+<a href="/?page=<% cur_page + 1 %>&limit=<% limit %>&ro=<% ro %>&branch=<% branch %>&filt=<% filt %>">Older</a>
  <% ELSE %>
 Older
  <% END %>
