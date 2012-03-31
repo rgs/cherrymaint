@@ -16,6 +16,9 @@ Branch in which cherry-picks will go:
 [<a href="/?ro=<% ro %>&branch=<% b %>&filt=<% filt %>"><% b %></a>]
 <% END %>
 <% END %>
+<% UNLESS ro %>
+- [<a href="/?ro=1&branch=<% branch %>&filt=<% filt %>">Read-only view</a>]
+<% END %>
 </div>
 <h1><a href="/?ro=<% ro %>&branch=<% branch %>&filt=<% filt %>" style="text-decoration:none">cherrymaint</a></h1>
 <div id="content">
