@@ -107,7 +107,9 @@ function toggleRejected() {
     }
 }
 function toggleFiltered() {
-    document.location.href = document.location.href.replace(/&?filt=\d*/,'') + '&filt=<% !filt %>';
+    document.location.href = document.location.href.replace(/&?filt=\d*/,'')
+        + (document.location.href.match(/\?/) ? '' : '?')
+        + 'filt=<% !filt %>';
 }
 </script>
 <% IF !ro %>
