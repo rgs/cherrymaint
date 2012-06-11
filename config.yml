@@ -7,9 +7,12 @@ datafile:   "~/cherrymaint.db"
 lock:       "~/cherrymaint.lock"
 # branches : maintenance track name -> range [ start tag, end head ]
 branches:
+    "maint-5.16":
+        - "v5.16.0"
+        - blead
     "maint-5.14":
         - "v5.14.0"
-        - blead
+        - "maint-5.16"
     "maint-5.12":
         - "v5.12.0"
         - "maint-5.14"
